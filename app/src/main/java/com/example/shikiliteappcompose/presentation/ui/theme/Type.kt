@@ -1,4 +1,4 @@
-package com.example.shikiliteappcompose.ui.theme
+package com.example.shikiliteappcompose.presentation.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

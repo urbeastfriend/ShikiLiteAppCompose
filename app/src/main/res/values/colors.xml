@@ -7,4 +7,6 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="shiki_dark">#7A84D0</color>
+    <color name="shiki_text">#C6CBF1</color>
 </resources>
