@@ -24,3 +24,4 @@ data class Image(
     val x48: String,
     val x96: String
 )
+
