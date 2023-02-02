@@ -10,6 +10,7 @@ import java.text.DateFormat
 @Entity(tableName = "watchHistory_table")
 class WatchHistoryItem(
     @PrimaryKey(autoGenerate = true) val id: Int,
+    val titleId: String,
     val titleName: String,
     val episodeWatched: String,
     val watchedDateTime: Long = System.currentTimeMillis()

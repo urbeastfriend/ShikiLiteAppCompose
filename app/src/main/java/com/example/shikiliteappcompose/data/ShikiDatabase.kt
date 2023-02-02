@@ -1,9 +1,9 @@
-package com.example.shikiliteappcompose.data.local
+package com.example.shikiliteappcompose.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.shikiliteappcompose.data.local.OnGoingTitles.OnGoingListItem
+import com.example.shikiliteappcompose.data.local.OnGoingTitles.OnGoingListItemDto
 import com.example.shikiliteappcompose.data.local.OnGoingTitles.OnGoingListItemsDao
 import com.example.shikiliteappcompose.data.local.WatchHistoryItems.WatchHistoryItem
 import com.example.shikiliteappcompose.data.local.WatchHistoryItems.WatchHistoryItemsDao
@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Provider
 
-@Database(entities = [WatchListItem::class,WatchHistoryItem::class,OnGoingListItem::class], version = 1, exportSchema = false)
+
+@Database(entities = [OnGoingListItemDto::class,WatchHistoryItem::class,WatchListItem::class], version = 2, exportSchema = false)
 abstract class ShikiDatabase: RoomDatabase() {
 
     abstract fun onGoingTitlesDao(): OnGoingListItemsDao
@@ -27,7 +28,7 @@ abstract class ShikiDatabase: RoomDatabase() {
     class CallBack @Inject constructor(
         private val database: Provider<ShikiDatabase>,
         @ApplicationScope private val applicationScope: CoroutineScope
-    ) : RoomDatabase.Callback(){
+    ) : Callback(){
 
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
@@ -35,25 +36,23 @@ abstract class ShikiDatabase: RoomDatabase() {
             val onGoingTitlesDao = database.get().onGoingTitlesDao()
 
             applicationScope.launch {
-                onGoingTitlesDao.insert(OnGoingListItem(titleName = "Атака титанов",
-                    titleStudio = "Wit studio",
+                onGoingTitlesDao.insert(OnGoingListItemDto(titleName = "Атака титанов",
                     id = 1,
                     thumbPath = "https://desu.shikimori.one/uploads/poster/animes/16498/d48cf869a01f48bfe18b96b7978e417c.jpeg"))
 
-                onGoingTitlesDao.insert(OnGoingListItem(titleName = "Атака титанов 2",
-                    titleStudio = "Wit studio",
+                onGoingTitlesDao.insert(OnGoingListItemDto(titleName = "Атака титанов 2",
                     id = 2,
                     thumbPath = "https://moe.shikimori.one/uploads/poster/animes/25777/fceb2e2a48193fb6e220777d09c70693.jpeg"))
 
-                onGoingTitlesDao.insert(OnGoingListItem(titleName = "Атака титанов 3",
-                    titleStudio = "Wit studio",
+                onGoingTitlesDao.insert(OnGoingListItemDto(titleName = "Атака титанов 3",
                     id = 3,
                     thumbPath = "https://nyaa.shikimori.one/uploads/poster/animes/35760/cdb107859ca0412d8a492903d7a5a8ba.jpeg"))
 
-                onGoingTitlesDao.insert(OnGoingListItem(titleName = "Атака титанов 3. Часть 2",
-                    titleStudio = "Wit studio",
-                    id = 3,
+                onGoingTitlesDao.insert(OnGoingListItemDto(titleName = "Атака титанов 3. Часть 2",
+                    id = 4,
                     thumbPath = "https://dere.shikimori.one/uploads/poster/animes/38524/36710503ef03f4347ef82ae8bd263cb3.jpeg"))
+
+
             }
         }
     }
