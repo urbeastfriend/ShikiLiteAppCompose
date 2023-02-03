@@ -1,6 +1,7 @@
 package com.example.shikiliteappcompose.presentation.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -26,6 +27,8 @@ private val LightColorPalette = lightColors(
     onSurface = Color.Black,
     */
 )
+
+
 
 @Composable
 fun ShikiLiteAppComposeTheme(

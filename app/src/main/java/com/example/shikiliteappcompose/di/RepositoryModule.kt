@@ -18,21 +18,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
-    @Binds
-    @Singleton
-    abstract fun bindRepository(
-        shikiRepositoryImpl: ShikiRepositoryImpl
-    ) : ShikiRepository
 
-    @Binds
-    @Singleton
-    abstract fun bindAnimeToOnGoingMapper(
-        animeToOnGoingMapper: AnimeToOnGoingMapper
-    ) : EntityMapper<Anime,OnGoingListItemDto>
 
-    @Binds
-    @Singleton
-    abstract fun bindOnGoingDomainMapper(
-        onGoingDomainMapper: OnGoingDomainMapper
-    ): EntityMapper<OnGoingListItemDto, OnGoingListItem>
+
 }

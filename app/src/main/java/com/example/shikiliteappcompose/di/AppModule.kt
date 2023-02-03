@@ -3,13 +3,18 @@ package com.example.shikiliteappcompose.di
 import android.app.Application
 import androidx.room.Room
 import com.example.shikiliteappcompose.data.ShikiDatabase
+import com.example.shikiliteappcompose.data.local.OnGoingTitles.OnGoingListItemDto
 import com.example.shikiliteappcompose.data.mapper.AnimeToOnGoingMapper
 import com.example.shikiliteappcompose.data.mapper.OnGoingDomainMapper
+import com.example.shikiliteappcompose.data.remote.ApiEntities.Anime
 import com.example.shikiliteappcompose.data.remote.api.ShikiApi
 import com.example.shikiliteappcompose.data.remote.repository.ShikiRepositoryImpl
+import com.example.shikiliteappcompose.domain.model.OnGoingListItem
 import com.example.shikiliteappcompose.domain.repository.ShikiRepository
+import com.example.shikiliteappcompose.util.EntityMapper
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +35,20 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
+    @Provides
+    fun provideAnimeToOnGoingMapper(
+        animeToOnGoingMapper: AnimeToOnGoingMapper
+    ): EntityMapper<Anime,OnGoingListItemDto>  = animeToOnGoingMapper
+
+    @Provides
+    fun provideOnGoingDomainMapper(
+        onGoingDomainMapper: OnGoingDomainMapper
+    ): EntityMapper<OnGoingListItemDto,OnGoingListItem> = onGoingDomainMapper
+
+    @Provides
+    fun provideRepository(
+        shikiRepositoryImpl: ShikiRepositoryImpl
+    ): ShikiRepository  = shikiRepositoryImpl
 
     @Singleton
     @Provides
