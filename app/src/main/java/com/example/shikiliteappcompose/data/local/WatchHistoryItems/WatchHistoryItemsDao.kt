@@ -11,15 +11,15 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WatchHistoryItemsDao {
 
-    @Query("SELECT * FROM watchhistory_table ORDER BY watchedDateTime")
-    fun getOnGoingsList() : Flow<List<WatchHistoryItem>>
+    @Query("SELECT * FROM watchhistory_table ORDER BY watchedDateTime LIMIT 10")
+    fun getRecentlyWatched() : List<WatchHistoryItemDto>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(watchHistoryItem: WatchHistoryItem)
+    suspend fun insert(watchHistoryItem: WatchHistoryItemDto)
 
     @Update
-    suspend fun update(watchHistoryItem: WatchHistoryItem)
+    suspend fun update(watchHistoryItem: WatchHistoryItemDto)
 
     @Delete
-    suspend fun delete(watchHistoryItem: WatchHistoryItem)
+    suspend fun delete(watchHistoryItem: WatchHistoryItemDto)
 }

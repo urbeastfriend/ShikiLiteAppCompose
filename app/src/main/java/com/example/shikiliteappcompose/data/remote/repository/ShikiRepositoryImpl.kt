@@ -2,17 +2,20 @@ package com.example.shikiliteappcompose.data.remote.repository
 
 import com.example.shikiliteappcompose.R
 import com.example.shikiliteappcompose.data.ShikiDatabase
-import com.example.shikiliteappcompose.data.local.OnGoingTitles.OnGoingListItemDto
-import com.example.shikiliteappcompose.data.local.WatchListItems.WatchListItem
 import com.example.shikiliteappcompose.data.mapper.AnimeToOnGoingMapper
 import com.example.shikiliteappcompose.data.mapper.OnGoingDomainMapper
-import com.example.shikiliteappcompose.data.remote.ApiEntities.Anime
+import com.example.shikiliteappcompose.data.mapper.WatchHistoryDomainMapper
+import com.example.shikiliteappcompose.data.mapper.WatchListDomainMapper
 import com.example.shikiliteappcompose.data.remote.api.ShikiApi
 import com.example.shikiliteappcompose.domain.model.OnGoingListItem
 import com.example.shikiliteappcompose.domain.repository.ShikiRepository
+import com.example.shikiliteappcompose.presentation.screens.home.HomeScreenRepositoryResponse
 import com.example.shikiliteappcompose.util.RepoCallState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -23,38 +26,57 @@ class ShikiRepositoryImpl @Inject constructor(
     private val api: ShikiApi,
     private val db: ShikiDatabase,
     private val animeToOnGoingMapper: AnimeToOnGoingMapper,
-    private val onGoingDomainMapper: OnGoingDomainMapper
+    private val onGoingDomainMapper: OnGoingDomainMapper,
+    private val watchListDomainMapper: WatchListDomainMapper
 ) : ShikiRepository {
 
     private val onGoingsDao = db.onGoingTitlesDao()
-    override suspend fun getOnGoings(): Flow<RepoCallState<List<OnGoingListItem>>> {
+    private val watchListDao = db.watchListItemsDao()
+    override suspend fun getHomeScreenPageContent(
+        fetchFromRemote: Boolean
+    ): Flow<RepoCallState<HomeScreenRepositoryResponse>> {
 
         return flow {
+            emit(RepoCallState.Loading(true))
 
             val localOnGoings = onGoingsDao.getOnGoingsList()
-            emit(RepoCallState.Success(data = onGoingDomainMapper.mapFromEntityList(localOnGoings)))
+            val watchListItems = watchListDao.getRecentlyWatched()
+
+            emit(
+                RepoCallState.Success(
+                    data = HomeScreenRepositoryResponse(
+                        ongoingsList = onGoingDomainMapper.mapFromEntityList(
+                            localOnGoings
+                        ),
+                        recentlyWatchedList = watchListDomainMapper.mapFromEntityList(
+                            watchListItems
+                        )
+                    )
+                )
+            )
+
+
+            val isDbEmpty = localOnGoings.isEmpty()
+            val shouldLoadFromCache = !isDbEmpty && !fetchFromRemote
+
+            if (shouldLoadFromCache) {
+                emit(RepoCallState.Loading(false))
+                return@flow
+            }
 
             val remoteOnGoings = try {
                 api.getOngoings()
-            } catch (e: HttpException) {
+            } catch (e: IOException) {
                 e.printStackTrace()
                 emit(
                     RepoCallState.Error(
                         messageId = R.string.api_call_error,
-                        data = onGoingDomainMapper.mapFromEntityList(localOnGoings)
                     )
                 )
                 null
-
-            }
-            catch (e: IOException) {
+            } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(
-                    RepoCallState.Error(
-                        messageId = R.string.api_call_error,
-                        data = onGoingDomainMapper.mapFromEntityList(localOnGoings)
-                    )
-                )
+                emit(RepoCallState.Error(messageId = R.string.api_call_error))
                 null
             }
 
@@ -63,8 +85,16 @@ class ShikiRepositoryImpl @Inject constructor(
                 onGoingsDao.insertList(
                     onGoings.map { animeToOnGoingMapper.mapFromEntity(it) }
                 )
-                emit(RepoCallState.Success(
-                        data = onGoingDomainMapper.mapFromEntityList(onGoingsDao.getOnGoingsList())
+                emit(
+                    RepoCallState.Success(
+                        data = HomeScreenRepositoryResponse(
+                            ongoingsList = onGoingDomainMapper.mapFromEntityList(
+                                localOnGoings
+                            ),
+                            recentlyWatchedList = watchListDomainMapper.mapFromEntityList(
+                                watchListItems
+                            )
+                        )
                     )
                 )
 
@@ -78,17 +108,6 @@ class ShikiRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun searchByName(name: String): Flow<List<Anime>> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getAnimeById(id: String): Flow<List<Anime>> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getRecentlyViewed(): Flow<List<WatchListItem>> {
-        TODO("Not yet implemented")
-    }
 }
 
 

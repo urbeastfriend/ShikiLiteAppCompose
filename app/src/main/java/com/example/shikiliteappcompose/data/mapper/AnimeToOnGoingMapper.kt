@@ -2,6 +2,7 @@ package com.example.shikiliteappcompose.data.mapper
 
 import com.example.shikiliteappcompose.data.local.OnGoingTitles.OnGoingListItemDto
 import com.example.shikiliteappcompose.data.remote.ApiEntities.Anime
+import com.example.shikiliteappcompose.data.remote.api.ShikiApi
 import com.example.shikiliteappcompose.util.EntityMapper
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,7 +14,7 @@ class AnimeToOnGoingMapper @Inject constructor() : EntityMapper<Anime,OnGoingLis
         return OnGoingListItemDto(
             id = entity.id,
             titleName = entity.name,
-            thumbPath = entity.image.original
+            thumbPath = ShikiApi.BASE_URL+entity.image.preview
 
         )
     }

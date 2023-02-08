@@ -11,7 +11,8 @@ interface ShikiApi {
     @Headers("User-Agent: ShikiLiteApp")
     @GET("/api/animes")
     suspend fun getOngoings(
-        @Query("status") status: String = "ongoing"
+        @Query("status") status: String = "ongoing",
+        @Query("limit") limit: String = SEARCH_LIMIT
     ): List<Anime>
 
 

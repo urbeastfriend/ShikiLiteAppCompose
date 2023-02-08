@@ -9,59 +9,72 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shikiliteappcompose.domain.repository.ShikiRepository
-import com.example.shikiliteappcompose.domain.use_case.GetOnGoingsUseCase
+
 import com.example.shikiliteappcompose.util.RepoCallState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val getOnGoingsUseCase: GetOnGoingsUseCase,
-    savedStateHandle: SavedStateHandle
+    private val shikiRepository: ShikiRepository
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(HomeScreenState())
-    val state: State<HomeScreenState> = _state
+
+    var state by mutableStateOf(HomeScreenState())
 
     init {
-        Log.d("urls", "called getOnGoings")
-        getOngoings()
+        viewModelScope.launch {
+        getHomeScreenContent()
+        }
     }
 
-
-    private fun getOngoings() {
-        getOnGoingsUseCase().onEach { result ->
-            when (result) {
-                is RepoCallState.Success -> {
-                    result.data?.let { onGoings ->
-                        Log.d("urls", "ongoings size = ${onGoings.size}" )
-                        _state.value = HomeScreenState(
-                            onGoingsList = onGoings,
-                            isLoading = false
-                        )
-                    }
-
-                }
-                is RepoCallState.Error -> {
-                    result.data?.let { onGoings ->
-                        _state.value = HomeScreenState(
-                            onGoingsList = onGoings,
-                            isLoading = false,
-                            errorMessageId = result.messageId
-                        )
-                    }
-                }
-                is RepoCallState.Loading -> {
-                    _state.value = HomeScreenState(
-                        isLoading = result.isLoading
-                    )
+    fun onEvent(event: HomeScreenEvent) {
+        when (event) {
+            is HomeScreenEvent.Refresh -> {
+                viewModelScope.launch {
+                getHomeScreenContent(fetchFromRemote = true)
                 }
             }
-        }.launchIn(viewModelScope)
+        }
     }
+
+    private suspend fun getHomeScreenContent(
+        fetchFromRemote: Boolean = false
+    ) = withContext(Dispatchers.IO){
+
+
+        shikiRepository.getHomeScreenPageContent(fetchFromRemote).collect { result ->
+            when (result) {
+                is RepoCallState.Success -> {
+                    result.data?.let { response ->
+                        withContext(Dispatchers.Main){
+                        state = state.copy(
+                            onGoingsList = response.ongoingsList,
+                            recentlyWatchedList = response.recentlyWatchedList
+                        )
+                        }
+                    }
+
+                }
+                is RepoCallState.Error -> Unit
+
+                is RepoCallState.Loading -> {
+                    withContext(Dispatchers.Main) {
+                        state = state.copy(
+                            isLoading = result.isLoading
+                        )
+                    }
+                }
+            }
+        }
+    }
+
 }
