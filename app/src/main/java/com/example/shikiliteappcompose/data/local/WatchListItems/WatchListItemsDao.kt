@@ -12,14 +12,17 @@ import kotlinx.coroutines.flow.Flow
 interface WatchListItemsDao {
 
     @Query("SELECT * FROM watchlist_table ORDER BY titleName")
-    fun getOnGoingsList() : Flow<List<WatchListItem>>
+    fun getWatchedList() : List<WatchListItemDto>
+
+    @Query("SELECT * FROM watchlist_table ORDER BY titleName")
+    fun getRecentlyWatched() : List<WatchListItemDto>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(watchListItem: WatchListItem)
+    suspend fun insert(watchListItem: WatchListItemDto)
 
     @Update
-    suspend fun update(watchListItem: WatchListItem)
+    suspend fun update(watchListItem: WatchListItemDto)
 
     @Delete
-    suspend fun delete(watchListItem: WatchListItem)
+    suspend fun delete(watchListItem: WatchListItemDto)
 }

@@ -7,10 +7,10 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "watchList_table")
-class WatchListItem(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+class WatchListItemDto(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val titleName: String,
-    val titleDescription: String,
+    val titleDescription: String = "Description is missing",
     val titleStatus: String = "released",
     val watchStatus: String = "Watching",
     val currentEpisode: String = "0",

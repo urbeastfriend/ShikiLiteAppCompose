@@ -1,14 +1,12 @@
 package com.example.shikiliteappcompose.data.remote.ApiEntities
 
-class Anime : ArrayList<AnimeItem>()
 
-
-data class AnimeItem(
+data class Anime(
     val aired_on: String,
     val episodes: Int,
     val episodes_aired: Int,
     val id: Int,
-    val image: Image,
+    val image: Images,
     val kind: String,
     val name: String,
     val released_on: Any,
@@ -18,7 +16,7 @@ data class AnimeItem(
     val url: String
 )
 
-data class Image(
+data class Images(
     val original: String,
     val preview: String,
     val x48: String,

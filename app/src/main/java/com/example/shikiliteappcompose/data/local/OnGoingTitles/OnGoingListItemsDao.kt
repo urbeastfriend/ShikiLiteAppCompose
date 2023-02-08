@@ -11,15 +11,20 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface OnGoingListItemsDao {
 
-    @Query("SELECT * FROM onGoingList_table ORDER BY titleName")
-    fun getOnGoingsList() : Flow<List<OnGoingListItem>>
+    @Query("SELECT * FROM onGoingsList_table")
+    suspend fun getOnGoingsList() : List<OnGoingListItemDto>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(onGoingListItem: OnGoingListItem)
+    suspend fun insert(onGoingListItem: OnGoingListItemDto)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertList(onGoingListItemList: List<OnGoingListItemDto>)
 
     @Update
-    suspend fun update(onGoingListItem: OnGoingListItem)
+    suspend fun update(onGoingListItem: OnGoingListItemDto)
 
-    @Delete
-    suspend fun delete(onGoingListItem: OnGoingListItem)
+    @Query("DELETE FROM onGoingsList_table")
+    suspend fun clearOnGoingsList()
+
+
 }

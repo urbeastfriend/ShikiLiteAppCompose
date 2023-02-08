@@ -6,10 +6,9 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "onGoingList_table")
-class OnGoingListItem(
+@Entity(tableName = "onGoingsList_table")
+class OnGoingListItemDto(
     @PrimaryKey(autoGenerate = false) val id: Int,
     val titleName: String,
-    val titleStudio: String,
     val thumbPath: String
 ) :Parcelable

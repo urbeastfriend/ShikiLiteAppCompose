@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ShikiLiteAppCompose</string>
+
+    <string name="api_call_error">Не получилось получить данные с сервера</string>
+
+    <string name="ongoings">Сейчас на экранах</string>
+    <string name="recently_watched">"Недавно просмотренное"</string>
+    <string name="Search">Поиск...</string>
 </resources>
