@@ -89,7 +89,7 @@ class ShikiRepositoryImpl @Inject constructor(
                     RepoCallState.Success(
                         data = HomeScreenRepositoryResponse(
                             ongoingsList = onGoingDomainMapper.mapFromEntityList(
-                                localOnGoings
+                                onGoingsDao.getOnGoingsList()
                             ),
                             recentlyWatchedList = watchListDomainMapper.mapFromEntityList(
                                 watchListItems
